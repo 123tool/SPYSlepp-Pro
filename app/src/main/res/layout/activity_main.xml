@@ -65,7 +65,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_marginTop="30dp"
-        android:text="© Rolandino | github.com/rolandino"
+        android:text="© SPY-E | github.com/123tool"
         android:textColor="#AAAAAA"
         android:textSize="12sp"/>
 
