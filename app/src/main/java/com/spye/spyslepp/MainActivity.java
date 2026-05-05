@@ -20,9 +20,15 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Minta Izin Kamera saat aplikasi dibuka
+        // 1. Minta Izin Kamera
         checkPermissions();
+        
+        // 2. Minta Izin Notifikasi (Khusus Android 13+)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS}, 101);
+        }
 
+        // 3. Inisialisasi UI
         etBotToken = findViewById(R.id.etBotToken);
         etChatId = findViewById(R.id.etChatId);
         Button btnSave = findViewById(R.id.btnSave);
@@ -30,9 +36,11 @@ public class MainActivity extends Activity {
 
         sharedPref = getSharedPreferences("SpyConfig", MODE_PRIVATE);
 
+        // Load data lama jika ada
         etBotToken.setText(sharedPref.getString("bot_token", ""));
         etChatId.setText(sharedPref.getString("chat_id", ""));
 
+        // Event Tombol Simpan
         btnSave.setOnClickListener(v -> {
             String token = etBotToken.getText().toString().trim();
             String cid = etChatId.getText().toString().trim();
@@ -45,6 +53,7 @@ public class MainActivity extends Activity {
             }
         });
 
+        // Event Tombol Hapus
         btnDelete.setOnClickListener(v -> {
             sharedPref.edit().clear().apply();
             etBotToken.setText("");
