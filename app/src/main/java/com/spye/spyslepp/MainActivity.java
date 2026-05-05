@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -20,45 +21,41 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // 1. Minta Izin Kamera
         checkPermissions();
         
-        // 2. Minta Izin Notifikasi (Khusus Android 13+)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS}, 101);
+        if (Build.VERSION.SDK_INT >= 33) {
+            requestPermissions(new String[]{"android.permission.POST_NOTIFICATIONS"}, 101);
         }
 
-        // 3. Inisialisasi UI
-        etBotToken = findViewById(R.id.etBotToken);
-        etChatId = findViewById(R.id.etChatId);
-        Button btnSave = findViewById(R.id.btnSave);
-        Button btnDelete = findViewById(R.id.btnDelete);
+        etBotToken = (EditText) findViewById(R.id.etBotToken);
+        etChatId = (EditText) findViewById(R.id.etChatId);
+        Button btnSave = (Button) findViewById(R.id.btnSave);
+        Button btnDelete = (Button) findViewById(R.id.btnDelete);
 
         sharedPref = getSharedPreferences("SpyConfig", MODE_PRIVATE);
-
-        // Load data lama jika ada
         etBotToken.setText(sharedPref.getString("bot_token", ""));
         etChatId.setText(sharedPref.getString("chat_id", ""));
 
-        // Event Tombol Simpan
-        btnSave.setOnClickListener(v -> {
-            String token = etBotToken.getText().toString().trim();
-            String cid = etChatId.getText().toString().trim();
-
-            if (!token.isEmpty() && !cid.isEmpty()) {
-                sharedPref.edit().putString("bot_token", token).putString("chat_id", cid).apply();
-                Toast.makeText(this, "Konfigurasi SPYSlepp Pro Disimpan!", Toast.LENGTH_SHORT).show();
-            } else {
-                Toast.makeText(this, "Wajib isi Token & ID!", Toast.LENGTH_SHORT).show();
+        btnSave.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String token = etBotToken.getText().toString().trim();
+                String cid = etChatId.getText().toString().trim();
+                if (!token.isEmpty() && !cid.isEmpty()) {
+                    sharedPref.edit().putString("bot_token", token).putString("chat_id", cid).apply();
+                    Toast.makeText(MainActivity.this, "Konfigurasi Disimpan!", Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
-        // Event Tombol Hapus
-        btnDelete.setOnClickListener(v -> {
-            sharedPref.edit().clear().apply();
-            etBotToken.setText("");
-            etChatId.setText("");
-            Toast.makeText(this, "Konfigurasi Dihapus!", Toast.LENGTH_SHORT).show();
+        btnDelete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sharedPref.edit().clear().apply();
+                etBotToken.setText("");
+                etChatId.setText("");
+                Toast.makeText(MainActivity.this, "Data Dihapus!", Toast.LENGTH_SHORT).show();
+            }
         });
     }
 
