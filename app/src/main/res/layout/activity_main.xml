@@ -1,72 +1,102 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout 
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF"
-    android:orientation="vertical"
-    android:padding="20dp">
+    android:background="#FFD400"> <!-- Kuning khas Saweria -->
 
-    <TextView 
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="SPYSlepp Pro"
-        android:textColor="#000000"
-        android:textSize="28sp"
-        android:textStyle="bold"/>
-
-    <TextView 
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Privacy &amp; Security Tool"
-        android:textColor="#555555"/>
-
-    <View 
-        android:layout_width="match_parent"
-        android:layout_height="2dp"
-        android:layout_marginVertical="20dp"
-        android:background="#000000"/>
-
-    <EditText 
-        android:id="@+id/etBotToken"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Telegram Bot Token"
-        android:inputType="textPassword"/>
+        android:orientation="vertical"
+        android:padding="25dp">
 
-    <EditText 
-        android:id="@+id/etChatId"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:hint="Telegram Chat ID"
-        android:inputType="number"/>
+        <!-- Header Card -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#FFFFFF"
+            android:padding="20dp"
+            android:elevation="0dp"
+            android:orientation="vertical"
+            android:layout_marginBottom="20dp">
+            
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="SPYSlepp Pro"
+                android:textColor="#000000"
+                android:textSize="32sp"
+                android:textStyle="bold" />
+            
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Privacy &amp; Security Tool"
+                android:textColor="#000000"
+                android:textSize="14sp" />
+        </LinearLayout>
 
-    <Button 
-        android:id="@+id/btnSave"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:backgroundTint="#000000"
-        android:text="Simpan Konfigurasi"
-        android:textColor="#FFFFFF"/>
+        <!-- Input Section -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="KONFIGURASI BOT"
+            android:textColor="#000000"
+            android:textStyle="bold"
+            android:layout_marginBottom="8dp" />
 
-    <Button 
-        android:id="@+id/btnDelete"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:backgroundTint="#FF5252"
-        android:text="Hapus Data"
-        android:textColor="#FFFFFF"/>
+        <EditText
+            android:id="@+id/etBotToken"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:background="#FFFFFF"
+            android:hint="Telegram Bot Token"
+            android:padding="15dp"
+            android:textColor="#000000" 
+            android:textColorHint="#888888"
+            android:layout_marginBottom="15dp" />
 
-    <TextView 
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginTop="30dp"
-        android:text="© SPY-E | github.com/123tool"
-        android:textColor="#AAAAAA"
-        android:textSize="12sp"/>
+        <EditText
+            android:id="@+id/etChatId"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:background="#FFFFFF"
+            android:hint="Telegram Chat ID"
+            android:padding="15dp"
+            android:textColor="#000000"
+            android:textColorHint="#888888"
+            android:inputType="number"
+            android:layout_marginBottom="25dp" />
 
-</LinearLayout>
+        <!-- Buttons -->
+        <Button
+            android:id="@+id/btnSave"
+            android:layout_width="match_parent"
+            android:layout_height="65dp"
+            android:backgroundTint="#000000"
+            android:text="SIMPAN KONFIGURASI"
+            android:textColor="#FFFFFF"
+            android:textStyle="bold"
+            android:layout_marginBottom="15dp" />
+
+        <Button
+            android:id="@+id/btnDelete"
+            android:layout_width="match_parent"
+            android:layout_height="65dp"
+            android:backgroundTint="#FF4B4B"
+            android:text="HAPUS DATA"
+            android:textColor="#FFFFFF"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="40dp"
+            android:text="© SPY-E | github.com/123tool"
+            android:textColor="#000000"
+            android:textSize="12sp"
+            android:textStyle="bold" />
+
+    </LinearLayout>
+</ScrollView>
